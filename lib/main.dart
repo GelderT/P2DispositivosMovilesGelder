@@ -46,7 +46,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20.0,
-                    color: Colors.red,
+                    color: Colors.red, 
                   ),
                 ),
                 SizedBox(width: 16),
@@ -55,7 +55,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20.0,
-                    color: Colors.red,
+                    color: Colors.red, 
                   ),
                 ),
               ],
@@ -69,26 +69,43 @@ class _TodoListScreenState extends State<TodoListScreen> {
                   children: <Widget>[
                     Container(
                       color: Colors.red[100], // Color de fondo rojo pálido
-                      child: CustomExpansionTile(
-                        title: Text(
-                          tasks[index].title,
-                          style: TextStyle(
-                            fontSize: 19.0, // Ajusta el tamaño de la fuente a 19.0 o según tus preferencias
-                          ),
+                      child: ListTile(
+                        title: Text(tasks[index].title,
+                        style: TextStyle(
+                                fontSize: 19.0, // Ajusta el tamaño de la fuente a 18.0 o según tus preferencias
+                              ),),
+                        subtitle: Text(tasks[index].description,
+                        style: TextStyle(
+                                fontSize: 17.0, // Ajusta el tamaño de la fuente a 18.0 o según tus preferencias
+                              ), ),
+                        leading: Checkbox(
+                          value: tasks[index].isCompleted,
+                          onChanged: (value) {
+                            setState(() {
+                              tasks[index].isCompleted = value!;
+                            });
+                          },
                         ),
-                        description: Text(
-                          tasks[index].description,
-                          style: TextStyle(
-                            fontSize: 17.0, // Ajusta el tamaño de la fuente a 17.0 o según tus preferencias
-                          ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.edit,color: Colors.red,),
+                              onPressed: () {
+                                _editTask(index);
+                              },
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.delete,color: Colors.red,),
+                              onPressed: () {
+                                setState(() {
+                                  tasks.removeAt(index);
+                                });
+                              },
+                            ),
+                          ],
                         ),
-                        isCompleted: tasks[index].isCompleted,
-                        onCheckboxChanged: (value) {
-                          setState(() {
-                            tasks[index].isCompleted = value!;
-                          });
-                        },
-                        onEditPressed: () {
+                        onTap: () {
                           _editTask(index);
                         },
                       ),
@@ -104,13 +121,10 @@ class _TodoListScreenState extends State<TodoListScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
         onPressed: _addTask,
-        label: Text('Agregar'),
-        icon: Icon(Icons.add),
-        backgroundColor: Colors.red, // Cambia el color de fondo del botón
+        child: Icon(Icons.add),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat, // Centra el botón
     );
   }
 
@@ -222,68 +236,4 @@ class Task {
   bool isCompleted;
 
   Task({required this.title, required this.description, this.isCompleted = false});
-}
-
-class CustomExpansionTile extends StatefulWidget {
-  final Widget title;
-  final Widget description;
-  final bool isCompleted;
-  final ValueChanged<bool?> onCheckboxChanged;
-  final VoidCallback onEditPressed;
-
-  const CustomExpansionTile({
-    required this.title,
-    required this.description,
-    required this.isCompleted,
-    required this.onCheckboxChanged,
-    required this.onEditPressed,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  _CustomExpansionTileState createState() => _CustomExpansionTileState();
-}
-
-class _CustomExpansionTileState extends State<CustomExpansionTile> {
-  bool _isExpanded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ListTile(
-          title: widget.title,
-          leading: Checkbox(
-            value: widget.isCompleted,
-            onChanged: widget.onCheckboxChanged,
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: Icon(Icons.edit, color: Colors.red),
-                onPressed: widget.onEditPressed,
-              ),
-              IconButton(
-                icon: Icon(Icons.delete, color: Colors.red),
-                onPressed: () {
-                  // Handle delete here
-                },
-              ),
-            ],
-          ),
-          onTap: () {
-            setState(() {
-              _isExpanded = !_isExpanded;
-            });
-          },
-        ),
-        if (_isExpanded)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: widget.description,
-          ),
-      ],
-    );
-  }
 }
